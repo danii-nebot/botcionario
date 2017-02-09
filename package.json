@@ -9,6 +9,10 @@
   "keywords": [],
   "author": "Danii Nebot <daniign@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danii-nebot/botcionario.git"
+  },
   "dependencies": {
     "botbuilder": "^3.6.0",
     "restify": "^4.3.0"
