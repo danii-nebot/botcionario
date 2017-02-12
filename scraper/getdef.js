@@ -5,7 +5,7 @@ module.exports = (word) => {
   .get(`https://es.wiktionary.org/wiki/${word}`)
   .set({
     'defs': ['dl'],
-    'thumbs':  ['img.thumbimage@src'],
+    'thumbs': ['img.thumbimage@src'],
     'thumbIndexes': ['div.thumbcaption']
   })
 //     .log(console.log)
