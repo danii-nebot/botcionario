@@ -1,4 +1,5 @@
 const builder = require('botbuilder')
+const scraper = require('./scraper')
 const secret = require('./secret.json')
 const { getHeroCards } = require('./cards')
 
@@ -65,10 +66,24 @@ intents.onDefault([
 // ]
 
 bot.dialog('/define', [
-    session => {
-        session.send(`OK, Esta es la palabra que te voy a definir: ${session.dialogData.keyword}`)
-        // TODO: session.sendTyping()
-        // TODO: lookup word in async service
-        session.endDialogWithResult({ })
-    }
+  session => {
+    console.log(session.dialogData)
+    session.send(`OK, Esta es la palabra que te voy a definir: ${session.dialogData.keyword}`)
+    session.sendTyping()
+    scraper.getdef(session.dialogData.keyword)
+      .then((context, data) => {
+        console.log(data)
+        var cards = getHeroCards(session, data)
+
+        // create reply with Carousel AttachmentLayout
+        const reply = new builder.Message(session)
+          .attachmentLayout(builder.AttachmentLayout.carousel)
+          .attachments(cards)
+
+        session.endDialogWithResult(reply)
+      })
+      .error((err) => {
+        console.log('ERR:', err)
+      })
+  }
 ])
