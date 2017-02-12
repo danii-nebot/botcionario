@@ -1,19 +1,14 @@
 const builder = require('botbuilder')
-const restify = require('restify')
 const secret = require('./secret.json')
-
-const server = restify.createServer()
-server.listen(3978, () => {
-    console.log(`${server.name} listening to ${server.url}`)
-})
+const { getHeroCards } = require('./cards')
 
 const connector = new builder.ChatConnector({
-    appId: secret.MICROSOFT_APP_ID,
-    appPassword: secret.MICROSOFT_APP_PASSWORD
+  appId: secret.MICROSOFT_APP_ID,
+  appPassword: secret.MICROSOFT_APP_PASSWORD
 })
 
 const bot = new builder.UniversalBot(connector)
-server.post('/api/messages', connector.listen())
+module.exports = { connector }
 
 const luisUrl = 'westus.api.cognitive.microsoft.com/luis/v2.0'
 const luisEndpointUrl = `https://${luisUrl}/apps/${secret.LUIS_APP_ID}?subscription-key=${secret.LUIS_API_KEY}`
