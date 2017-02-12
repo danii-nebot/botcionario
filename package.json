@@ -16,7 +16,6 @@
   "dependencies": {
     "botbuilder": "^3.6.0",
     "osmosis": "^1.1.2",
-    "restify": "^4.3.0",
-    "x-ray": "^2.3.1"
+    "restify": "^4.3.0"
   }
 }
