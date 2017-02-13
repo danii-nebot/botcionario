@@ -82,12 +82,12 @@ bot.dialog('/define', [
     scraper.getdef(args.keyword)
       .then((context, data) => {
         if (!data) {
-          return Promise.reject('Received empty dataset from scraper')
+          throw new Error('404 no dataset')
         }
 
         // unkown word
         if (data.defs.length === 1 && data.defs[1] === '1\nNo definido') {
-          throw new Error(404)
+          throw new Error('404 no definition')
         }
 
         var cards = getHeroCards(session, data)
