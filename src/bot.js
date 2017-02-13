@@ -30,16 +30,27 @@ intents.onDefault([
   .matches('greeting', [
     session =>
       session.send('es un greeting')
+        // TODO: fallback to default dialog
   ])
   .matches('definition', [
     (session, args) => {
-      const keyword = builder.EntityRecognizer.findEntity(args.entities, 'keyword').entity
-      session.send(`quieres que te defina ${keyword}`)
-      session.beginDialog('/define', { keyword })
+      const found = builder.EntityRecognizer.findEntity(args.entities, 'keyword')
+      if (found && found.entity) {
+        const keyword = found.entity
+        session.send(`quieres que te defina ${keyword}`)
+        session.beginDialog('/define', { keyword })
+      } else {
+        session.send('Vaya parece que no te he entendido bien')
+        // TODO: fallback to default dialog
+      }
     },
     (session, results) => {
-      console.log('--->', results)
-      session.send(results.response)
+      if (results.response) {
+        session.send(results.response)
+      } else {
+        session.send('Lo siento parece que no conozco esa palabra :(')
+        // TODO: fallback to default dialog
+      }
     }
   ])
   .matches('synonym', [
@@ -76,7 +87,7 @@ bot.dialog('/define', [
 
         // unkown word
         if (data.defs.length === 1 && data.defs[1] === '1\nNo definido') {
-          session.endDialogWithResult({ error: 'not found' })
+          throw new Error(404)
         }
 
         var cards = getHeroCards(session, data)
@@ -90,7 +101,6 @@ bot.dialog('/define', [
       })
       .error((err) => {
         session.endDialogWithResult({ error: err })
-        console.log('ERR:', err)
       })
   }
 ])
