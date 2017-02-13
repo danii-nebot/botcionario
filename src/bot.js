@@ -1,7 +1,7 @@
 const builder = require('botbuilder')
 const scraper = require('./scraper')
 const { getHeroCards } = require('./cards')
-const secret = require('./secret.json')
+const secret = require('../secret.json')
 
 const connector = new builder.ChatConnector({
   appId: secret.MICROSOFT_APP_ID,
