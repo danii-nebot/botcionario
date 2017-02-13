@@ -1,7 +1,7 @@
 const builder = require('botbuilder')
 const scraper = require('./scraper')
-const secret = require('./secret.json')
 const { getHeroCards } = require('./cards')
+const secret = require('./secret.json')
 
 const connector = new builder.ChatConnector({
   appId: secret.MICROSOFT_APP_ID,
@@ -34,13 +34,12 @@ intents.onDefault([
   .matches('definition', [
     (session, args) => {
       const keyword = builder.EntityRecognizer.findEntity(args.entities, 'keyword').entity
-      console.log(keyword)
       session.send(`quieres que te defina ${keyword}`)
-      session.dialogData.keyword = keyword
-      session.beginDialog('/define')
+      session.beginDialog('/define', { keyword })
     },
     (session, results) => {
-      console.log(results)
+      console.log('--->', results)
+      session.send(results.response)
     }
   ])
   .matches('synonym', [
@@ -66,13 +65,20 @@ intents.onDefault([
 // ]
 
 bot.dialog('/define', [
-  session => {
-    console.log(session.dialogData)
-    session.send(`OK, Esta es la palabra que te voy a definir: ${session.dialogData.keyword}`)
+  (session, args) => {
+    session.send(`OK, Esta es la palabra que te voy a definir: ${args.keyword}`)
     session.sendTyping()
-    scraper.getdef(session.dialogData.keyword)
+    scraper.getdef(args.keyword)
       .then((context, data) => {
-        console.log(data)
+        if (!data) {
+          return Promise.reject('Received empty dataset from scraper')
+        }
+
+        // unkown word
+        if (data.defs.length === 1 && data.defs[1] === '1\nNo definido') {
+          session.endDialogWithResult({ error: 'not found' })
+        }
+
         var cards = getHeroCards(session, data)
 
         // create reply with Carousel AttachmentLayout
@@ -80,9 +86,10 @@ bot.dialog('/define', [
           .attachmentLayout(builder.AttachmentLayout.carousel)
           .attachments(cards)
 
-        session.endDialogWithResult(reply)
+        session.endDialogWithResult({ response: reply })
       })
       .error((err) => {
+        session.endDialogWithResult({ error: err })
         console.log('ERR:', err)
       })
   }
