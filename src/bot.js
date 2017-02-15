@@ -81,7 +81,7 @@ bot.dialog('/define', [
     session.sendTyping()
     scraper.getdef(args.keyword)
       .then((context, data) => {
-        if (!data) {
+        if (!data || !data.defs) {
           throw new Error('404 no dataset')
         }
 
@@ -90,7 +90,7 @@ bot.dialog('/define', [
           throw new Error('404 no definition')
         }
 
-        var cards = getHeroCards(session, data)
+        var cards = getHeroCards(session, data, args.keyword)
 
         // create reply with Carousel AttachmentLayout
         const reply = new builder.Message(session)
