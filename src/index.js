@@ -1,3 +1,4 @@
+'use strict'
 const restify = require('restify')
 const { connector } = require('./bot')
 
