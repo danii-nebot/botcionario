@@ -1,2 +1,7 @@
 node_modules
 secret.json
+.DS_Store
+npm-debug.log
+npm-debug.log.*
+thumbs.db
+!.gitkeep
