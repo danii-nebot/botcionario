@@ -1,5 +1,5 @@
-const getdef = require('./getdef')
+const getdata = require('./getdata')
 
 module.exports = {
-  getdef
+  getdata
 }
