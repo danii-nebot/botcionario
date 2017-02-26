@@ -1,5 +1,6 @@
 const builder = require('botbuilder')
 const scraper = require('./scraper')
+const corrector = require('./corrector')
 const { getHeroCards } = require('./cards')
 const secret = require('../secret.json')
 
@@ -30,19 +31,21 @@ intents.onDefault([
   .matches('greeting', [
     session =>
       session.send('es un greeting')
-        // TODO: fallback to default dialog
+    // TODO: fallback to default dialog
   ])
   .matches('definition', [
     (session, args) => {
       const found = builder.EntityRecognizer.findEntity(args.entities, 'keyword')
       if (found && found.entity) {
         const keyword = found.entity
-        session.send(`quieres que te defina ${keyword}`)
-        session.beginDialog('/define', { keyword })
+        session.beginDialog('/correct', { keyword })
       } else {
         session.send('Vaya parece que no te he entendido bien')
         // TODO: fallback to default dialog
       }
+    },
+    (session, results) => {
+      session.beginDialog('/define', { keyword: results.keyword })
     },
     (session, results) => {
       if (results.response) {
@@ -75,11 +78,25 @@ intents.onDefault([
 //     }
 // ]
 
+bot.dialog('/correct', [
+  (session, args) => {
+    session.send(`quieres que te defina ${args.keyword}`)
+    session.sendTyping()
+    const closestWords = corrector.findWord(args.keyword)
+    let correctedWord
+    if (closestWords[0].dist <= 1) { // match on distance 1 for testing...
+      correctedWord = closestWords[0].id
+    } else {
+      // TODO: show quick reply matches
+    }
+    session.endDialogWithResult({ keyword: correctedWord })
+  }
+])
 bot.dialog('/define', [
   (session, args) => {
     session.send(`OK, Esta es la palabra que te voy a definir: ${args.keyword}`)
     session.sendTyping()
-    scraper.getdef(args.keyword)
+    scraper.getdata(args.keyword)
       .then((context, data) => {
         if (!data || !data.defs) {
           throw new Error('404 no dataset')
