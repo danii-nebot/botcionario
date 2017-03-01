@@ -6,8 +6,7 @@ module.exports = (word) => {
   .set({
     'defs': ['dl'],
     'thumbs': ['img.thumbimage@src'],
-    'thumbIndexes': ['div.thumbcaption'],
-    'types': ['h3>span.mw-headline']
+    'thumbIndexes': ['div.thumbcaption']
   })
 //     .log(console.log)
 //     .error(console.log)

@@ -11,8 +11,9 @@ Code based on the amazing [SitePoint's MS Bots course](https://www.sitepoint.com
 - Greetings workflow
 - Synonyms
 - Antonyms (coming soon)
-- Load up list of most common Words
-- VPTree package
+- ~~Load up test list of most common words~~
+- ~~VPTree package~~
 - "Autocorrect" words before searching in wiktionary
+- Add final list of most common spanish words
 - logo
 - how to deploy
